@@ -27,6 +27,15 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           name: manager
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 1000
+            runAsGroup: 3000
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - all      
           env:
             # TODO: integrate with cert manager and auto gen a cert for minio
             {{- if .Values.minio.enabled }}
