@@ -130,6 +130,23 @@ func (r *ScanReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	return ctrl.Result{}, nil
 }
 
+var truePointer = true
+var falsePointer = false
+var oneThousand int64 = 1000
+var threeThousand int64 = 3000
+
+var goodSecurityContext = corev1.SecurityContext{
+	Privileged:               &falsePointer,
+	AllowPrivilegeEscalation: &falsePointer,
+	RunAsNonRoot:             &truePointer,
+	ReadOnlyRootFilesystem:   &truePointer,
+	RunAsUser:                &oneThousand,
+	RunAsGroup:               &threeThousand,
+	Capabilities: &corev1.Capabilities{
+		Drop: []corev1.Capability{"all"},
+	},
+}
+
 type jobCompletionType string
 
 const (
@@ -441,6 +458,7 @@ func (r *ScanReconciler) startParser(scan *executionv1.Scan) error {
 								findingsUploadURL,
 							},
 							ImagePullPolicy: "Always",
+							SecurityContext: &goodSecurityContext,
 							Resources: corev1.ResourceRequirements{
 								Requests: corev1.ResourceList{
 									corev1.ResourceCPU:    resource.MustParse("200m"),
@@ -610,6 +628,7 @@ func (r *ScanReconciler) constructJobForScan(scan *executionv1.Scan, scanType *e
 				},
 			},
 		},
+		SecurityContext: &goodSecurityContext,
 		Resources: corev1.ResourceRequirements{
 			Requests: corev1.ResourceList{
 				corev1.ResourceCPU:    resource.MustParse("20m"),
@@ -1059,6 +1078,7 @@ func (r *ScanReconciler) createJobForHook(hook *executionv1.ScanCompletionHook, 
 							Args:            cliArgs,
 							Env:             append(hook.Spec.Env, standardEnvVars...),
 							ImagePullPolicy: "IfNotPresent",
+							SecurityContext: &goodSecurityContext,
 							Resources: corev1.ResourceRequirements{
 								Requests: corev1.ResourceList{
 									corev1.ResourceCPU:    resource.MustParse("200m"),
