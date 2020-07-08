@@ -83,3 +83,4 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       terminationGracePeriodSeconds: 10
+      serviceAccountName: securecodebox-operator
