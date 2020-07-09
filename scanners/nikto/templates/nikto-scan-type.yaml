@@ -22,5 +22,15 @@ spec:
                 - '/wrapper.sh'
                 - '-o'
                 - '/home/securecodebox/nikto-results.json'
+              securityContext:
+                privileged: false
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                runAsUser: 1000
+                runAsGroup: 3000
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - all
               resources:
                 {{- toYaml .Values.scannerJob.resources | nindent 16 }}

@@ -17,5 +17,15 @@ spec:
             - name: nmap
               image: scbexperimental/nmap:7.80
               command: ["nmap", "-oX", "/home/securecodebox/nmap-results.xml"]
+              securityContext:
+                privileged: false
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                runAsUser: 1000
+                runAsGroup: 3000
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - all
               resources:
                 {{- toYaml .Values.scannerJob.resources | nindent 16 }}

@@ -20,5 +20,15 @@ spec:
                 - "/app/bin/ssh_scan"
                 - "--output"
                 - "/home/securecodebox/ssh-scan-results.json"
+              securityContext:
+                privileged: false
+                allowPrivilegeEscalation: false
+                # ssh_scan image isn't properly build to run as a non root user :(
+                runAsNonRoot: false
+                # ssh_scan crashes with a read only filesystem... :(
+                readOnlyRootFilesystem: false
+                capabilities:
+                  drop:
+                    - all
               resources:
                 {{- toYaml .Values.scannerJob.resources | nindent 16 }}
